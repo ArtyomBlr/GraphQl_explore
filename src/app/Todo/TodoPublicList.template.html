@@ -1,0 +1,11 @@
+<div class="todoListWrapper">
+  <ul>
+    <ng-container *ngFor="let todo of todos">
+      <TaskItem [todo]="todo"></TaskItem>
+    </ng-container>
+  </ul>
+
+  <div class="loadMoreSection" (click)="loadMore()">
+    {{olderTodosAvailable ? 'Load older tasks' : 'No more public tasks!'}}
+  </div>
+</div>
