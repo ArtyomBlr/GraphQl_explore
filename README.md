@@ -48,6 +48,7 @@
   - **Subscription:** Subscriptions in GraphQL allow clients to receive real-time updates from the server. They are typically used to subscribe to specific events or changes in the data. (is not needed for us).
 
   - Example:
+
     ```graphql
     subscription {
       newMessage {
@@ -57,30 +58,29 @@
       }
     }
     ```
-  - This subscription listens for new messages and receives updates whenever a new message is added to the system.
 
   ## Apollo Client: Simplifying Data Management in GraphQL Applications
 
   To enhance your GraphQL experience in Angular, you can leverage the power of Apollo Client. Apollo Client is a robust GraphQL client that offers advanced features
 
-  1. **Caching:**
+  1 **Caching:**
 
   - Apollo Client provides an intelligent caching mechanism that automatically stores and retrieves data from the cache. This reduces the need for unnecessary network requests and improves application performance.
   - Realtime update without response sending, just from cache can be reached with `update() .readQuery, .writeQuery` example app/Todo/TodoItem.ts
 
-  2. **Local State Management:**
+  2 **Local State Management:**
 
   - Apollo Client allows you to manage local application state alongside your GraphQL data. You can define and manipulate local data using GraphQL queries and mutations, providing a unified approach to data management.
 
-  3. **Optimistic UI Updates:**
+  3 **Optimistic UI Updates:**
 
   - With Apollo Client, you can implement optimistic UI updates, which means updating the UI immediately after a user action and then synchronizing the changes with the server. This provides a smooth and responsive user experience. Use `optimisticResponse: {}`, example app/Todo/TodoItem.ts
 
-  5. **Error Handling:**
+  4 **Error Handling:**
 
   - Apollo Client provides robust error handling mechanisms, allowing you to handle errors gracefully and provide meaningful feedback to users.
 
-  6. **Pagination:**
+  5 **Pagination:**
 
   - Apollo Client offers built-in support for pagination, making it easy to implement features like infinite scrolling or "load more" buttons in your application.
 
