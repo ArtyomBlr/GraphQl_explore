@@ -1,6 +1,3 @@
-markdown
-Copy code
-
 # REST API vs GraphQL API: A Concise Comparison
 
 ## REST API:
@@ -15,22 +12,14 @@ Copy code
 - **Query Language for API:** GraphQL describes the API's data comprehensively, enabling clients to request precisely what they need for efficiency.
 - **Single Endpoint:** Operates over a single endpoint, with clients using queries for data retrieval and mutations for data modification.
 - **Real-Time Data:** Supports real-time updates via subscriptions, allowing clients to maintain live connections for immediate data updates.
+- **Type Safety:** GraphQL schemas provide a clear contract between the server and the client, ensuring type safety and minimizing runtime errors.
 - **Introspective:** Self-documenting schema defines API capabilities, facilitating tooling support like auto-completion and validation.
 - **Avoid Over and Under Fetching:** Clients specify exact data needs, mitigating issues of over-fetching and under-fetching.
 
-## Additional Tools and Concepts:
-
-- **Installation: Apollo Client**
-
-  - **Apollo Client:** A full-fledged GraphQL client that seamlessly integrates with frontend frameworks, providing features like caching and error handling.
-
-- **Development Environment: GraphiQL**
-
-  - **GraphiQL:** In-browser IDE for interactive exploration of GraphQL APIs, facilitating query testing and documentation viewing.
-
 - **GraphQL Operations:**
 
-  - **Query:** Corresponds to HTTP GET method, used for data retrieval.
+  - **Query:** Corresponds to HTTP GET method, used for data fetching.
+
     - Example:
       ```graphql
       query {
@@ -41,8 +30,11 @@ Copy code
         }
       }
       ```
-  - **Mutation:** Similar to HTTP POST, used for modifying data, often involving updating UI with readQuery and writeQuery.
+
+  - **Mutation:** Similar to HTTP POST, PUT, DELETE, used for modifying data.
+
     - Example:
+
       ```graphql
       mutation {
         updateUser(id: "123", input: { name: "New Name", email: "new@email.com" }) {
@@ -52,51 +44,89 @@ Copy code
         }
       }
       ```
-  - **Optimistic Response:** Allows optimistic UI updates by providing a temporary response before receiving confirmation from the server.
-    - Example:
-      ```json
-      {
-        "id": "temp-id-123",
-        "title": "New Todo",
-        "completed": false
-      }
-      ```
-  - **Fragment:** Enables the construction and reuse of field sets within queries for improved query structure.
-    - Example:
-      ```graphql
-      fragment UserInfo on User {
+
+  - **Subscription:** Subscriptions in GraphQL allow clients to receive real-time updates from the server. They are typically used to subscribe to specific events or changes in the data. (is not needed for us).
+
+  - Example:
+    ```graphql
+    subscription {
+      newMessage {
         id
-        name
-        email
+        content
+        timestamp
       }
-      ```
-  - **Directives:** Allows dynamic query structure changes based on variables, addressing scenarios like summarized vs. detailed views.
-    - Example:
-      ```graphql
-      query ($detailed: Boolean!) {
-        getUser(id: "123") {
-          id
-          name
-          ... @include(if: $detailed) {
-            email
-            phone
-          }
-        }
-      }
-      ```
-  - **Meta Fields:** Offers additional metadata like \_\_typename for insights into query execution.
-    - Example:
-      ```graphql
-      query {
-        __typename
-        getUser(id: "123") {
-          id
-          name
-        }
-      }
-      ```
+    }
+    ```
+  - This subscription listens for new messages and receives updates whenever a new message is added to the system.
 
-- GraphQL services may implement batching techniques or use tools like DataLoader to optimize database access.
-- Additional tools like GraphQL Shield for authorization and GraphQL ESLint for code quality assurance may enhance GraphQL API development.
+  ## Apollo Client: Simplifying Data Management in GraphQL Applications
 
-This summary highlights the key differences between REST and GraphQL APIs along with
+  To enhance your GraphQL experience in Angular, you can leverage the power of Apollo Client. Apollo Client is a robust GraphQL client that offers advanced features
+
+  1. **Caching:**
+
+  - Apollo Client provides an intelligent caching mechanism that automatically stores and retrieves data from the cache. This reduces the need for unnecessary network requests and improves application performance.
+  - Realtime update without response sending, just from cache can be reached with `update() .readQuery, .writeQuery` example app/Todo/TodoItem.ts
+
+  2. **Local State Management:**
+
+  - Apollo Client allows you to manage local application state alongside your GraphQL data. You can define and manipulate local data using GraphQL queries and mutations, providing a unified approach to data management.
+
+  3. **Optimistic UI Updates:**
+
+  - With Apollo Client, you can implement optimistic UI updates, which means updating the UI immediately after a user action and then synchronizing the changes with the server. This provides a smooth and responsive user experience. Use `optimisticResponse: {}`, example app/Todo/TodoItem.ts
+
+  5. **Error Handling:**
+
+  - Apollo Client provides robust error handling mechanisms, allowing you to handle errors gracefully and provide meaningful feedback to users.
+
+  6. **Pagination:**
+
+  - Apollo Client offers built-in support for pagination, making it easy to implement features like infinite scrolling or "load more" buttons in your application.
+
+  ### apollo-angular requests return Observable!
+
+  - Example:
+
+  ```
+  const REMOVE_TODO = gql`
+    mutation removeTodo($id: Int!) {
+      delete_todos(where: { id: { _eq: $id } }) {
+        affected_rows
+      }
+    }
+  `;
+
+  this.apollo
+    .mutate({
+      mutation: REMOVE_TODO,
+      variables: { id: this.todo.id },
+      optimisticResponse: {},
+      update: (cache) => {
+        const existingTodos: any = cache.readQuery({ query: GET_MY_TODOS });
+
+        const todos = existingTodos.todos.filter(
+          (t) => t.id !== this.todo.id
+        );
+
+        cache.writeQuery({
+          query: GET_MY_TODOS,
+          data: { todos },
+        });
+      },
+    })
+    .subscribe(
+      ({ data }) => {
+        console.log('got data', data);
+      },
+      (error) => {
+        console.log('there was an error sending the query', error);
+      }
+    );
+  ```
+
+## [Hasura Angular Guide](https://hasura.io/learn/graphql/angular-apollo/intro-to-graphql/)
+
+## [GraphiQL - good Postman alternative for graphQl](https://github.com/graphql/graphiql)
+
+## [GraphQL Documentation](https://graphql.org/learn/)
